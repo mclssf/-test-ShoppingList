@@ -8,7 +8,17 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface Document : NSDocument
+@interface Document : NSDocument{
+    IBOutlet NSTextField *itemAddTextField;
+    IBOutlet NSTableView *shoppingListTableView;
+    IBOutlet NSButton *addItemButton;
+    IBOutlet NSButton *removeItemButton;
+    
+    NSMutableArray *shoppingListArray;
+}
+
+-(IBAction)addItemToShoppingList:(id)sender;
+-(IBAction)removeItemFromShoppingList:(id)sender;
 
 
 @end

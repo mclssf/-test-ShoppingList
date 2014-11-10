@@ -18,9 +18,86 @@
     self = [super init];
     if (self) {
         // Add your subclass-specific initialization here.
+        shoppingListArray = [[NSMutableArray alloc] init];
+        [shoppingListArray addObject:@"Milk"];
     }
     return self;
 }
+
+-(void)dealloc {
+    [shoppingListArray release];
+    [super dealloc];
+}
+
+-(IBAction)addItemToShoppingList:(id)sender
+{
+    NSString *stringToAdd = [itemAddTextField stringValue];
+    for (NSString *eachItem in shoppingListArray) {
+        if ([stringToAdd isEqualToString:eachItem]) {
+            NSAlert *repeatAlert = [NSAlert alertWithMessageText:@"Add an existing item" defaultButton:@"Cancel" alternateButton:@"Proceed" otherButton:nil informativeTextWithFormat:@"Would you still add an existing item?"];
+            if ([repeatAlert runModal] == NSAlertDefaultReturn) {
+                return;
+            }
+            else{
+                break;
+            }
+        }
+    }
+    
+    [shoppingListArray addObject:stringToAdd];
+    [shoppingListTableView reloadData];
+    
+    if (sender == itemAddTextField){
+        [itemAddTextField setStringValue:@""];
+    }
+}
+
+-(IBAction)removeItemFromShoppingList:(id)sender
+{
+    NSInteger rowToRemove = [shoppingListTableView selectedRow];
+    if (rowToRemove >= 0 && rowToRemove < [shoppingListArray count]){
+        NSString *stringToRemove = [shoppingListArray objectAtIndex:rowToRemove];
+        NSAlert *removeAlert = [NSAlert alertWithMessageText:@"Remove Item" defaultButton:@"Remove" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Would you remove %@ from Shopping List Items?", stringToRemove];
+        if ([removeAlert runModal] == NSAlertDefaultReturn){
+            [shoppingListArray removeObjectAtIndex:rowToRemove];
+            [shoppingListTableView reloadData];
+        }
+    }
+    else{
+        NSAlert *nothingToRemoveAlert = [NSAlert alertWithMessageText:@"Error" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"There is nothing to remove"];
+        [nothingToRemoveAlert runModal];
+    }
+}
+
+//implementation for tableview protocol
+-(NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+    return [shoppingListArray count];
+}
+
+-(id)tableView:(NSTableView *)aTableView
+        objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+{
+    if (aTableView == shoppingListTableView){
+        NSString *stringToReturn = [shoppingListArray objectAtIndex:row];
+        return stringToReturn;
+    }
+    else{
+        return nil;
+    }
+}
+
+-(void)tableView:(NSTableView *)aTableView
+        setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+{
+    if (aTableView == shoppingListTableView){
+        [shoppingListArray setObject:object atIndexedSubscript:row];
+    }
+    else{
+
+    }
+}
+
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
